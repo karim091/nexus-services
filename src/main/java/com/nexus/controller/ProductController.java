@@ -28,16 +28,16 @@ public class ProductController {
 
 
     @PostMapping("/products")
-    public ResponseEntity<Products> newProduct( @RequestBody Products newProduct, WebRequest webRequest) throws Exception {
-        Products product = productService.saveProduct(newProduct);
+    public ResponseEntity<Products> newProduct(@RequestBody Products newProduct, WebRequest webRequest, @RequestParam("userId") String userId) throws Exception {
+        Products product = productService.saveProduct(newProduct, userId);
         String uri = String.format("%s/products/%s", webRequest.getContextPath(), UUID.randomUUID());
         URI locationURI = new URI(uri);
         return ResponseEntity.created(locationURI).body(product);
     }
 
     @PostMapping("/bulkProducts")
-    public ResponseEntity<List<Products>> bulkProducts( @RequestBody List<Products> productList, WebRequest webRequest) throws Exception {
-        List<Products> products = productService.saveBulkProduct(productList);
+    public ResponseEntity<List<Products>> bulkProducts( @RequestBody List<Products> productList, WebRequest webRequest, @RequestParam("userId") String userId) throws Exception {
+        List<Products> products = productService.saveBulkProduct(productList, userId);
         String uri = String.format("%s/products/%s", webRequest.getContextPath(), UUID.randomUUID());
         URI locationURI = new URI(uri);
         return ResponseEntity.created(locationURI).body(products);
@@ -74,8 +74,8 @@ public class ProductController {
     }
 
     @PutMapping("/products")
-    public ResponseEntity<Products> updateProduct( @RequestBody Products product){
-        Products updated = productService.updateProduct(product);
+    public ResponseEntity<Products> updateProduct( @RequestBody Products product, @RequestParam("userId") String userId){
+        Products updated = productService.updateProduct(product, userId);
         return ResponseEntity.ok().body(updated);
     }
 

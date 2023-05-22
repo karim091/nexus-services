@@ -11,6 +11,7 @@ import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.DocumentReference;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Document(collection = "users")
@@ -36,6 +37,9 @@ public class Users {
     private String userEmail;
 
     @DBRef
-    private List<Company> companyProfile;
+    private List<Company> companyProfile = new ArrayList<>();
+
+    @DBRef
+    private List<Products> productList = new ArrayList<>();
 
 }

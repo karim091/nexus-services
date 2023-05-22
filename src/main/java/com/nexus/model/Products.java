@@ -11,6 +11,8 @@ import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.DocumentReference;
 
+import java.util.List;
+
 @Document(collection = "products")
 @Data
 @Setter
@@ -33,4 +35,7 @@ public class Products {
     private Country countryOfOrigin;
 
     private String description;
+
+    private String userId;
+
 }
