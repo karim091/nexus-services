@@ -1,5 +1,6 @@
 package com.nexus.services;
 
+import com.nexus.exception.NotFoundException;
 import com.nexus.model.Products;
 import com.nexus.model.Users;
 import com.nexus.repo.IProductRepo;
@@ -22,7 +23,11 @@ public class ProductService implements IProductService {
 
     @Override
     public Products updateProduct(Products product) {
-        return repo.save(product);
+        if (repo.findById(product.getId()).isPresent()) {
+            return repo.save(product);
+        } else {
+            throw new NotFoundException("Product: " + product.getId() + " is not exist.");
+        }
     }
 
     @Override
@@ -32,13 +37,13 @@ public class ProductService implements IProductService {
 
     @Override
     public List<Products> findAllProducts() {
-      return repo.findAll();
+        return repo.findAll();
     }
 
     @Override
     public List<Products> findProductsByCountry(String countryOfOrigin) {
         List<Products> optProduct = repo.findProductByCountry(countryOfOrigin);
-        if (!optProduct.isEmpty()){
+        if (!optProduct.isEmpty()) {
             return optProduct;
         } else {
             return new ArrayList<>();
@@ -48,7 +53,7 @@ public class ProductService implements IProductService {
     @Override
     public List<Products> findProductByType(String productType) {
         List<Products> optProduct = repo.findProductByType(productType);
-        if (!optProduct.isEmpty()){
+        if (!optProduct.isEmpty()) {
             return optProduct;
         } else {
             return new ArrayList<>();

@@ -1,5 +1,6 @@
 package com.nexus.services;
 
+import com.nexus.exception.NotFoundException;
 import com.nexus.model.Company;
 import com.nexus.model.Users;
 import com.nexus.repo.ICompanyRepo;
@@ -11,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-public class CompanyService implements ICompanyServices{
+public class CompanyService implements ICompanyServices {
 
     @Autowired
     private ICompanyRepo repo;
@@ -22,26 +23,28 @@ public class CompanyService implements ICompanyServices{
 
     @Override
     public Company newCompany(Company company) {
+        if (company.getUserId() != null) {
+            Users user = userService.findUserById(company.getUserId());
+            if (user == null) {
+                throw new NotFoundException("User Id is not exist.");
+            } else {
+                user.getCompanyProfile().add(company);
+                userService.updateUser(user);
 
-        if(company.getUserId() != null ) {
-           Users user =  userService.findUserById(company.getUserId());
-           if(user == null){
-               return null;
-           }else {
-               user.getCompanyProfile().add(company);
-               userService.updateUser(user);
-
-           }
+            }
         }
         return repo.insert(company);
     }
 
     @Override
     public Company updateCompany(Company company) {
-        if(repo.findById(company.getId()).isPresent()){
+        if (userService.findUserById(company.getUserId()) == null) {
+            throw new NotFoundException("User Id " + company.getUserId() + " is not exist.");
+        }
+        if (repo.findById(company.getId()).isPresent()) {
             return repo.save(company);
         } else {
-            return null;
+            throw new NotFoundException("Company Id " + company.getId() + " is not exist.");
         }
     }
 
@@ -53,7 +56,7 @@ public class CompanyService implements ICompanyServices{
     @Override
     public List<Company> findCompanyByCountry(String companyLocation) {
         List<Company> optCompany = repo.findCompanyByLocation(companyLocation);
-        if (!optCompany.isEmpty()){
+        if (!optCompany.isEmpty()) {
             return optCompany;
         } else {
             return new ArrayList<>();
@@ -64,10 +67,10 @@ public class CompanyService implements ICompanyServices{
     @Override
     public Company findCompanyByName(String companyName) {
         Company optCompany = repo.findCompanyByName(companyName);
-        if (optCompany != null){
+        if (optCompany != null) {
             return optCompany;
         } else {
-            return null;
+            throw new NotFoundException("Company " + companyName + " is not exist.");
         }
 
     }
