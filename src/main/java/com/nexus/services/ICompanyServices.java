@@ -8,7 +8,7 @@ import java.util.List;
 public interface ICompanyServices {
 
 
-    Company newCompany(Company company);
+    Company newCompany(Company company)throws Exception ;
     List<Company> findAllCompanies();
     List<Company> findCompanyByCountry(String companyLocation);
     Company findCompanyByName(String companyName);

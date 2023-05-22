@@ -1,6 +1,7 @@
 package com.nexus.services;
 
 import com.nexus.exception.NotFoundException;
+import com.nexus.exception.UnHandledCustomException;
 import com.nexus.model.Company;
 import com.nexus.model.Users;
 import com.nexus.repo.ICompanyRepo;
@@ -24,11 +25,11 @@ public class UserService implements IUserService {
     private ICompanyServices companyServices;
 
     @Override
-    public Users newUser(Users user) {
+    public Users newUser(Users user) throws Exception {
         if (!user.getCompanyProfile().isEmpty()) {
-            user.getCompanyProfile().forEach(company -> {
+            for (Company company : user.getCompanyProfile()) {
                 companyServices.newCompany(company);
-            });
+            }
             Users userCreated = repo.insert(user);
             user.getCompanyProfile().forEach(c -> {
                 c.setUserId(userCreated.getId());

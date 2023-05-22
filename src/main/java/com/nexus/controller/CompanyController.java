@@ -9,57 +9,55 @@ import com.nexus.services.ICompanyServices;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.WebRequest;
 
+import java.net.URI;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("api")
+@Validated
 @SuppressWarnings("all")
 public class CompanyController {
     @Autowired
     private ICompanyServices companyServices;
 
     @PostMapping("/company")
-    public ResponseEntity<Company> newCompany( @RequestBody Company company){
-       Company createdCompany = companyServices.newCompany(company);
-        if(company != null){
-            return new ResponseEntity<>(HttpStatus.OK).ok(createdCompany);
-        }else{
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+    public ResponseEntity<Company> newCompany(@RequestBody Company company, WebRequest webRequest) throws Exception{
+        Company createdCompany = companyServices.newCompany(company);
+        String uri = String.format("%s/company/%s", webRequest.getContextPath(), UUID.randomUUID());
+        URI locationURI = new URI(uri);
+       return ResponseEntity.created(locationURI).body(createdCompany);
     }
 
     @GetMapping("/companies")
-    public ResponseEntity<List<Company>> findAllCompanies(){
+    public ResponseEntity<List<Company>> findAllCompanies() {
         List<Company> companyList = companyServices.findAllCompanies();
-        if(!companyList.isEmpty()){
-            return new ResponseEntity<>(HttpStatus.OK).ok(companyList);
-        }else{
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        if (!companyList.isEmpty()) {
+            return ResponseEntity.ok().body(companyList);
+        } else {
+            return ResponseEntity.noContent().build();
         }
     }
 
 
     @GetMapping("/companiesByCountry/{country}")
-    public ResponseEntity<List<Company>> findCompaniesByCountry(@PathVariable("country")Country country){
+    public ResponseEntity<List<Company>> findCompaniesByCountry(@PathVariable("country") Country country) {
         List<Company> companyList = companyServices.findCompanyByCountry(country.toString());
-        if(!companyList.isEmpty()){
-            return new ResponseEntity<>(HttpStatus.OK).ok(companyList);
-        }else{
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        if (!companyList.isEmpty()) {
+            return ResponseEntity.ok().body(companyList);
+        } else {
+            return ResponseEntity.noContent().build();
         }
     }
 
     @GetMapping("/companyByName/{countryName}")
-    public ResponseEntity<Company> findCompaniesByName(@PathVariable("countryName")String  countryName){
+    public ResponseEntity<Company> findCompaniesByName(@PathVariable("countryName") String countryName) {
         Company company = companyServices.findCompanyByName(countryName);
-        if(company != null){
-            return new ResponseEntity<>(HttpStatus.OK).ok(company);
-        }else{
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+        return ResponseEntity.ok().body(company);
     }
-
 
 }

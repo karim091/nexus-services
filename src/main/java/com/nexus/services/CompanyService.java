@@ -1,5 +1,6 @@
 package com.nexus.services;
 
+import com.nexus.exception.MissingDataException;
 import com.nexus.exception.NotFoundException;
 import com.nexus.model.Company;
 import com.nexus.model.Users;
@@ -22,18 +23,22 @@ public class CompanyService implements ICompanyServices {
 
 
     @Override
-    public Company newCompany(Company company) {
-        if (company.getUserId() != null) {
-            Users user = userService.findUserById(company.getUserId());
-            if (user == null) {
-                throw new NotFoundException("User Id is not exist.");
-            } else {
-                user.getCompanyProfile().add(company);
-                userService.updateUser(user);
+    public Company newCompany(Company company) throws Exception {
 
+            if (company.getUserId() != null) {
+                Users user = userService.findUserById(company.getUserId());
+                if (user == null) {
+                    throw new NotFoundException("User Id is not exist.");
+                } else {
+                    Company createdCompany = repo.insert(company);
+                    user.getCompanyProfile().add(createdCompany);
+                    userService.updateUser(user);
+                    return createdCompany;
+                }
+            }else {
+                return repo.insert(company);
             }
-        }
-        return repo.insert(company);
+
     }
 
     @Override

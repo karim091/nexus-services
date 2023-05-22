@@ -7,7 +7,7 @@ import java.util.List;
 public interface IUserService {
 
 
-    Users newUser(Users user);
+    Users newUser(Users user)   throws Exception;
     Users updateUser(Users user);
     List<Users> findAllUsers();
     Users findUserById(String id);

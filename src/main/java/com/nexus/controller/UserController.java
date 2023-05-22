@@ -9,12 +9,18 @@ import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.WebRequest;
 
+import java.net.URI;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("api")
+@Validated
+
 @SuppressWarnings("all")
 public class UserController {
 
@@ -24,30 +30,24 @@ public class UserController {
     @PutMapping("/user")
     public ResponseEntity<Users> updateUser(@RequestBody Users newUser){
         Users user = userService.updateUser(newUser);
-        if(user != null){
-            return new ResponseEntity<>(HttpStatus.CREATED).ok(user);
-        }else{
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+        return ResponseEntity.ok().body(user);
     }
 
     @PostMapping("/user")
-    public ResponseEntity<Users> newUser(@RequestBody Users newUser){
+    public ResponseEntity<Users> newUser(@RequestBody Users newUser, WebRequest webRequest) throws Exception{
         Users user = userService.newUser(newUser);
-        if(user != null){
-            return new ResponseEntity<>(HttpStatus.CREATED).ok(user);
-        }else{
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+        String uri = String.format("%s/company/%s", webRequest.getContextPath(), UUID.randomUUID());
+        URI locationURI = new URI(uri);
+        return ResponseEntity.created(locationURI).body(user);
     }
 
     @GetMapping("/user")
     public ResponseEntity< List<Users>> listusers(){
         List<Users> userList = userService.findAllUsers();
         if(!userList.isEmpty()){
-            return new ResponseEntity<>(HttpStatus.OK).ok(userList);
+            return ResponseEntity.ok().body(userList);
         }else{
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            return ResponseEntity.noContent().build();
         }
     }
 
@@ -55,9 +55,9 @@ public class UserController {
     public ResponseEntity< List<Users>> userByRole(@PathVariable("userRole") UserRole userRole){
         List<Users> userList = userService.findUserByRole(userRole.toString());
         if(!userList.isEmpty()){
-            return new ResponseEntity<>(HttpStatus.OK).ok(userList);
+            return ResponseEntity.ok().body(userList);
         }else{
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return ResponseEntity.noContent().build();
         }
     }
 
@@ -65,9 +65,9 @@ public class UserController {
     public ResponseEntity< List<Users>> userByType(@PathVariable("userType") UserType userType){
         List<Users> userList = userService.findUserByType(userType.toString());
         if(!userList.isEmpty()){
-            return new ResponseEntity<>(HttpStatus.OK).ok(userList);
+            return ResponseEntity.ok().body(userList);
         }else{
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return ResponseEntity.noContent().build();
         }
     }
 
@@ -75,9 +75,9 @@ public class UserController {
     public ResponseEntity<Users> userByType(@PathVariable("id") String id){
         Users user = userService.findUserById(id);
         if(user != null){
-            return new ResponseEntity<>(HttpStatus.OK).ok(user);
+            return ResponseEntity.ok().body(user);
         }else{
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return ResponseEntity.noContent().build();
         }
     }
 
