@@ -26,8 +26,6 @@ public class Products {
     private String imgURL;
     private ProductType productType;
 
-    private String capacity;
-
     private String condition;
 
     private Metric metric;

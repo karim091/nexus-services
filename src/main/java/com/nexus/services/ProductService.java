@@ -18,6 +18,14 @@ public class ProductService implements IProductService {
 
     @Override
     public Products saveProduct(Products product) {
+        Products p = findProductByName(product.getName().eq);
+        if(p != null && p.getName().equalsIgnoreCase(product.getName())) {
+            int oldQu = p.getQuantity();
+            int newQu = product.getQuantity();
+            int totalQu = oldQu+newQu;
+            p.setQuantity(totalQu);
+            return updateProduct(p);
+        }
         return repo.insert(product);
     }
 
@@ -31,8 +39,21 @@ public class ProductService implements IProductService {
     }
 
     @Override
+    public Products findProductByName(String name) {
+      return repo.findProductByName(name);
+    }
+
+    @Override
     public List<Products> saveBulkProduct(List<Products> productList) {
-        return repo.insert(productList);
+        List<Products> productCreatedList = new ArrayList<>();
+
+        productList.forEach(product -> {
+            Products p = saveProduct(product);
+            productCreatedList.add(p);
+        });
+
+        return null;
+
     }
 
     @Override
