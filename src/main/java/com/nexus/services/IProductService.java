@@ -12,7 +12,7 @@ public interface IProductService {
 
     Products findProductByNameAndUserId(String productName, String userId);
 
-   // Products findAProductByUserId(String userId);
+    //List<Products> findAProductByName(String productName);
 
 
     List<Products> saveBulkProduct(List<Products> productList, String userId);

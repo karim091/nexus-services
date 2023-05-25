@@ -1,7 +1,6 @@
 package com.nexus.repo;
 
 import com.nexus.model.Products;
-import com.nexus.model.Users;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 
@@ -16,7 +15,11 @@ public interface IProductRepo extends MongoRepository<Products, String> {
     List<Products> findProductByType(String productType);
 
     @Query("{'productName': ?0, 'userId': ?1}")
-    Products findProductByName(String productName, String userId);
+    Products findProductByNameAndUserId(String productName, String userId);
+
+
+    @Query("{'productName': ?0}")
+    Products findProductByName(String productName);
 
     @Query("{userId:'?0'}")
     List<Products> findProductByUserId(String userId);

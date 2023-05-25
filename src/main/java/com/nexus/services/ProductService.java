@@ -1,20 +1,18 @@
 package com.nexus.services;
 
-import com.nexus.exception.NotFoundException;
 import com.nexus.exception.UnHandledCustomException;
 import com.nexus.model.Products;
 import com.nexus.model.ProductsDTO;
 import com.nexus.model.Users;
 import com.nexus.repo.IProductRepo;
 import com.nexus.utils.Helper;
-import lombok.Synchronized;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 @Component
 @Transactional
@@ -63,7 +61,7 @@ public class ProductService implements IProductService {
 
     @Override
     public Products findProductByNameAndUserId(String productName, String userId) {
-        return repo.findProductByName(productName, userId);
+        return repo.findProductByNameAndUserId(productName, userId);
     }
 
     @Override
@@ -115,31 +113,19 @@ public class ProductService implements IProductService {
 
     @Override
     public List<ProductsDTO> findAllProductsAggregated(String userId) {
-        Iterator<Products> it = findAllProducts(userId).iterator();
+        List<Products> productList = findAllProducts(userId);
         List<ProductsDTO> aggregatedList = new ArrayList<>();
-        // TO avoid ConcurrentModificationException
-        List<ProductsDTO> toBeAdded = new ArrayList<>();
-        Set<String> userIds = new HashSet<>();
 
-        while (it.hasNext()) {
-            Products p1 = it.next();
-            if (aggregatedList.isEmpty()) {
-                userIds.add(p1.getUserId());
-                ProductsDTO dto = new ProductsDTO(p1.getProductName(), p1.getProductQuantity(), p1.getProductDescription(), p1.getProductMetric(), p1.getProductType(), userIds);
-                aggregatedList.add(dto);
-            } else {
-                for (ProductsDTO agg : aggregatedList) {
-                    if (p1.getProductName().equalsIgnoreCase(agg.getProductName())) {
-                        agg.setProductQuantities(sumQuantity(p1.getProductQuantity(), agg.getProductQuantities()));
-                    } else {
-                        userIds.add(p1.getUserId());
-                        ProductsDTO dto = new ProductsDTO(p1.getProductName(), p1.getProductQuantity(), p1.getProductDescription(), p1.getProductMetric(), p1.getProductType(), userIds);
-                        toBeAdded.add(dto);
-                    }
-                }
-            }
-        }
-        aggregatedList.addAll(toBeAdded);
+        //Or alternatively as suggested by Holger
+        Map<String, Long> groupsNew = productList.stream().collect(Collectors.groupingBy(Products::getProductName, Collectors.summingLong(Products::getProductQuantity)));
+
+        System.out.println(groupsNew);
+        groupsNew.forEach((productName, quantity)->{
+            ProductsDTO dto = new ProductsDTO(productName, Integer.valueOf(quantity.toString()));
+            aggregatedList.add(dto);
+        });
+
+
         return aggregatedList;
     }
 
