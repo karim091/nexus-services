@@ -6,6 +6,7 @@ import com.nexus.model.Company;
 import com.nexus.model.Users;
 import com.nexus.repo.ICompanyRepo;
 import com.nexus.repo.IUserRepo;
+import com.nexus.utils.Helper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +24,8 @@ public class CompanyService implements ICompanyServices {
     @Autowired
     private IUserService userService;
 
+    @Autowired
+    private Helper helper;
 
     @Override
     public Company newCompany(Company company) throws Exception {
@@ -56,7 +59,8 @@ public class CompanyService implements ICompanyServices {
     }
 
     @Override
-    public List<Company> findAllCompanies() {
+    public List<Company> findAllCompanies(String userId) {
+        helper.checkUserAuthority(userId);
         return repo.findAll();
     }
 

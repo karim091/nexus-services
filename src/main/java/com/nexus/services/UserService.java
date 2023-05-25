@@ -6,6 +6,7 @@ import com.nexus.model.Company;
 import com.nexus.model.Users;
 import com.nexus.repo.ICompanyRepo;
 import com.nexus.repo.IUserRepo;
+import com.nexus.utils.Helper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
@@ -25,6 +26,10 @@ public class UserService implements IUserService {
     @Autowired
     @Lazy
     private ICompanyServices companyServices;
+
+    @Autowired
+    private Helper helper;
+
 
     @Override
     public Users newUser(Users user) throws Exception {
@@ -53,7 +58,8 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public List<Users> findAllUsers() {
+    public List<Users> findAllUsers(String userId) {
+        helper.checkUserAuthority(userId);
         return repo.findAll();
     }
 
@@ -68,7 +74,9 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public List<Users> findUserByRole(String userRole) {
+    public List<Users> findUserByRole(String userRole, String userId) {
+        helper.checkUserAuthority(userId);
+
         List<Users> optUser = repo.findUserByRole(userRole);
         if (!optUser.isEmpty()) {
             return optUser;
@@ -78,7 +86,9 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public List<Users> findUserByType(String userType) {
+    public List<Users> findUserByType(String userType, String userId) {
+        helper.checkUserAuthority(userId);
+
         List<Users> optUser = repo.findUserByType(userType);
         if (!optUser.isEmpty()) {
             return optUser;

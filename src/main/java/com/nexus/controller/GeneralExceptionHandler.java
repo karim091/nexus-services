@@ -1,9 +1,6 @@
 package com.nexus.controller;
 
-import com.nexus.exception.ExceptionResponseBody;
-import com.nexus.exception.MissingDataException;
-import com.nexus.exception.NotFoundException;
-import com.nexus.exception.UnHandledCustomException;
+import com.nexus.exception.*;
 import org.springframework.beans.TypeMismatchException;
 import org.springframework.http.*;
 import org.springframework.web.ErrorResponseException;
@@ -27,6 +24,11 @@ public class GeneralExceptionHandler extends ResponseEntityExceptionHandler {
         return buildCommonResponse(ex, HttpStatus.BAD_REQUEST, request);
     }
 
+    @ExceptionHandler(AuthorizationException.class)
+    public ResponseEntity<Object> handleAuthorizationException(
+            MissingDataException ex, WebRequest request) {
+        return buildCommonResponse(ex, HttpStatus.UNAUTHORIZED, request);
+    }
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<Object> handleNotFoundException(
             NotFoundException ex, WebRequest request) {

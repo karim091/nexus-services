@@ -42,8 +42,8 @@ public class UserController {
     }
 
     @GetMapping("/user")
-    public ResponseEntity< List<Users>> listusers(){
-        List<Users> userList = userService.findAllUsers();
+    public ResponseEntity< List<Users>> listusers(@RequestParam(name = "userId", required = true) String userId){
+        List<Users> userList = userService.findAllUsers(userId);
         if(!userList.isEmpty()){
             return ResponseEntity.ok().body(userList);
         }else{
@@ -52,8 +52,8 @@ public class UserController {
     }
 
     @GetMapping("/userByRole/{userRole}")
-    public ResponseEntity< List<Users>> userByRole(@PathVariable("userRole") UserRole userRole){
-        List<Users> userList = userService.findUserByRole(userRole.toString());
+    public ResponseEntity< List<Users>> userByRole(@PathVariable("userRole") UserRole userRole, @RequestParam(name = "userId", required = true) String userId){
+        List<Users> userList = userService.findUserByRole(userRole.toString(), userId);
         if(!userList.isEmpty()){
             return ResponseEntity.ok().body(userList);
         }else{
@@ -62,8 +62,8 @@ public class UserController {
     }
 
     @GetMapping("/userByType/{userType}")
-    public ResponseEntity< List<Users>> userByType(@PathVariable("userType") UserType userType){
-        List<Users> userList = userService.findUserByType(userType.toString());
+    public ResponseEntity< List<Users>> userByType(@PathVariable("userType") UserType userType, @RequestParam(name = "userId", required = true) String userId){
+        List<Users> userList = userService.findUserByType(userType.toString(), userId);
         if(!userList.isEmpty()){
             return ResponseEntity.ok().body(userList);
         }else{

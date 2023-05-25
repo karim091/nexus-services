@@ -3,6 +3,7 @@ package com.nexus.controller;
 import com.nexus.model.Country;
 import com.nexus.model.ProductType;
 import com.nexus.model.Products;
+import com.nexus.model.ProductsDTO;
 import com.nexus.services.IProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -28,7 +29,7 @@ public class ProductController {
 
 
     @PostMapping("/products")
-    public ResponseEntity<Products> newProduct(@RequestBody Products newProduct, WebRequest webRequest, @RequestParam("userId") String userId) throws Exception {
+    public ResponseEntity<Products> newProduct(@RequestBody Products newProduct, WebRequest webRequest, @RequestParam(name = "userId", required = true) String userId) throws Exception {
         Products product = productService.saveProduct(newProduct, userId);
         String uri = String.format("%s/products/%s", webRequest.getContextPath(), UUID.randomUUID());
         URI locationURI = new URI(uri);
@@ -36,7 +37,7 @@ public class ProductController {
     }
 
     @PostMapping("/bulkProducts")
-    public ResponseEntity<List<Products>> bulkProducts( @RequestBody List<Products> productList, WebRequest webRequest, @RequestParam("userId") String userId) throws Exception {
+    public ResponseEntity<List<Products>> bulkProducts( @RequestBody List<Products> productList, WebRequest webRequest, @RequestParam(name = "userId", required = true) String userId) throws Exception {
         List<Products> products = productService.saveBulkProduct(productList, userId);
         String uri = String.format("%s/products/%s", webRequest.getContextPath(), UUID.randomUUID());
         URI locationURI = new URI(uri);
@@ -44,9 +45,21 @@ public class ProductController {
 
     }
 
-    @GetMapping("/products")
-    public ResponseEntity<List<Products>> allProducts(){
-        List<Products> productList = productService.findAllProducts();
+    // ADMIN ONLY
+    @GetMapping("/productsAggregated")
+    public ResponseEntity<List<ProductsDTO>> allProducts(@RequestParam(name = "userId", required = true) String userId){
+        List<ProductsDTO> productList = productService.findAllProductsAggregated(userId);
+        if(!productList.isEmpty()){
+            return ResponseEntity.ok().body(productList);
+        }else{
+            return ResponseEntity.noContent().build();
+        }
+    }
+
+    // ADMIN
+    @GetMapping("/productsByUserId")
+    public ResponseEntity<List<Products>> allProductsByUserId(@RequestParam(name = "userId", required = true) String userId){
+        List<Products> productList = productService.findAllProductsByUserId(userId);
         if(!productList.isEmpty()){
             return ResponseEntity.ok().body(productList);
         }else{
@@ -55,7 +68,7 @@ public class ProductController {
     }
 
     @GetMapping("/productsByType/{productType}")
-    public ResponseEntity<List<Products>> getProductByType(@PathVariable("productType") ProductType productType){
+    public ResponseEntity<List<Products>> getProductByType(@PathVariable("productType") ProductType productType, @RequestParam(name = "userId", required = true) String userId){
         List<Products> productList = productService.findProductByType(productType.toString());
         if(!productList.isEmpty()){
             return ResponseEntity.ok().body(productList);
@@ -64,7 +77,7 @@ public class ProductController {
         }
     }
     @GetMapping("/productsByCountry/{country}")
-    public ResponseEntity<List<Products>> getProductByType(@PathVariable("country") Country country){
+    public ResponseEntity<List<Products>> getProductByType(@PathVariable("country") Country country, @RequestParam(name = "userId", required = true) String userId){
         List<Products> productList = productService.findProductsByCountry(country.toString());
         if(!productList.isEmpty()){
             return ResponseEntity.ok().body(productList);
@@ -74,7 +87,7 @@ public class ProductController {
     }
 
     @PutMapping("/products")
-    public ResponseEntity<Products> updateProduct( @RequestBody Products product, @RequestParam("userId") String userId){
+    public ResponseEntity<Products> updateProduct( @RequestBody Products product, @RequestParam(name = "userId", required = true) String userId){
         Products updated = productService.updateProduct(product, userId);
         return ResponseEntity.ok().body(updated);
     }

@@ -9,13 +9,17 @@ import java.util.List;
 
 public interface IProductRepo extends MongoRepository<Products, String> {
 
-    @Query("{countryOfOrigin:'?0'}")
-    List<Products> findProductByCountry(String countryOfOrigin);
+    @Query("{productCountryOfOrigin:'?0'}")
+    List<Products> findProductByCountry(String productCountryOfOrigin);
 
     @Query("{productType:'?0'}")
     List<Products> findProductByType(String productType);
 
-    @Query("{name:'?0'}")
-    Products findProductByName(String name);
+    @Query("{'productName': ?0, 'userId': ?1}")
+    Products findProductByName(String productName, String userId);
+
+    @Query("{userId:'?0'}")
+    List<Products> findProductByUserId(String userId);
+
 
 }

@@ -2,21 +2,19 @@ package com.nexus.services;
 
 import com.nexus.exception.NotFoundException;
 import com.nexus.exception.UnHandledCustomException;
-import com.nexus.model.Company;
 import com.nexus.model.Products;
+import com.nexus.model.ProductsDTO;
 import com.nexus.model.Users;
-import com.nexus.model.UsersProduct;
 import com.nexus.repo.IProductRepo;
-import com.nexus.repo.IUserProductsRepo;
+import com.nexus.utils.Helper;
+import lombok.Synchronized;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Component
 @Transactional
@@ -30,27 +28,22 @@ public class ProductService implements IProductService {
     private IUserService userService;
 
     @Autowired
-    private IUserProductsRepo userProductsRepo;
+    private Helper helper;
 
     @Override
     public Products saveProduct(Products product, String userId) {
         try {
             Products finalProduct;
             Users user = userService.findUserById(userId);
-            if (user != null) {
-                Products p = findProductByName(product.getName());
-                if (p != null && p.getName().equalsIgnoreCase(product.getName())) {
-                    p.setQuantity(sumQuantity(p.getQuantity(), product.getQuantity()));
-                    finalProduct = updateProduct(p, userId);
-                } else {
-                    product.setUserId(userId);
-                    finalProduct = repo.insert(product);
-                    user.getProductList().add(finalProduct);
-                    userService.updateUser(user);
-                }
-
+            Products p = findProductByNameAndUserId(product.getProductName(), userId);
+            if (p != null && p.getProductName().equalsIgnoreCase(product.getProductName())) {
+                p.setProductQuantity(sumQuantity(p.getProductQuantity(), product.getProductQuantity()));
+                finalProduct = updateProduct(p, userId);
             } else {
-                throw new NotFoundException("User Id is not exist.");
+                product.setUserId(userId);
+                finalProduct = repo.insert(product);
+                user.getProductList().add(finalProduct);
+                userService.updateUser(user);
             }
             return finalProduct;
         } catch (Exception ex) {
@@ -65,16 +58,12 @@ public class ProductService implements IProductService {
 
     @Override
     public Products updateProduct(Products product, String userId) {
-        if (repo.findById(product.getId()).isPresent()) {
-            return repo.save(product);
-        } else {
-            throw new NotFoundException("Product: " + product.getId() + " is not exist.");
-        }
+        return repo.save(product);
     }
 
     @Override
-    public Products findProductByName(String name) {
-        return repo.findProductByName(name);
+    public Products findProductByNameAndUserId(String productName, String userId) {
+        return repo.findProductByName(productName, userId);
     }
 
     @Override
@@ -91,26 +80,15 @@ public class ProductService implements IProductService {
     }
 
     @Override
-    public List<Products> findAllProducts() {
+    public List<Products> findAllProducts(String userId) {
+        helper.checkUserAuthority(userId);
         return repo.findAll();
     }
 
-    @Override
-    public List<Products> findAllProductsAggregated() {
-        List<Products> list = findAllProducts();
-        List<Products> aggregatedList = new ArrayList<>();
-        if (!list.isEmpty()) {
-            // TODO Aggregate Products Quantities
-
-            return aggregatedList;
-        } else {
-            return new ArrayList<>();
-        }
-    }
 
     @Override
-    public List<Products> findProductsByCountry(String countryOfOrigin) {
-        List<Products> optProduct = repo.findProductByCountry(countryOfOrigin);
+    public List<Products> findProductsByCountry(String productCountryOfOrigin) {
+        List<Products> optProduct = repo.findProductByCountry(productCountryOfOrigin);
         if (!optProduct.isEmpty()) {
             return optProduct;
         } else {
@@ -128,65 +106,41 @@ public class ProductService implements IProductService {
         }
     }
 
+
     @Override
-    public UsersProduct addProductsToUsers(Products products, String userId) {
-        userService.findUserById(userId);
-        List<Products> newProducts = new ArrayList<>();
-        UsersProduct userProducts = userProductsRepo.findByUserId(userId);
-        if (userProducts != null) {
-            userProducts.getProductsList().forEach(oldProduct -> {
-                if (oldProduct.getName().equalsIgnoreCase(products.getName())) {
-                    oldProduct.setQuantity(sumQuantity(oldProduct.getQuantity(), products.getQuantity()));
-                } else {
-                    newProducts.add(products);
+    public List<Products> findAllProductsByUserId(String adminUserId) {
+        userService.findUserById(adminUserId);
+        return repo.findProductByUserId(adminUserId);
+    }
+
+    @Override
+    public List<ProductsDTO> findAllProductsAggregated(String userId) {
+        Iterator<Products> it = findAllProducts(userId).iterator();
+        List<ProductsDTO> aggregatedList = new ArrayList<>();
+        // TO avoid ConcurrentModificationException
+        List<ProductsDTO> toBeAdded = new ArrayList<>();
+        Set<String> userIds = new HashSet<>();
+
+        while (it.hasNext()) {
+            Products p1 = it.next();
+            if (aggregatedList.isEmpty()) {
+                userIds.add(p1.getUserId());
+                ProductsDTO dto = new ProductsDTO(p1.getProductName(), p1.getProductQuantity(), p1.getProductDescription(), p1.getProductMetric(), p1.getProductType(), userIds);
+                aggregatedList.add(dto);
+            } else {
+                for (ProductsDTO agg : aggregatedList) {
+                    if (p1.getProductName().equalsIgnoreCase(agg.getProductName())) {
+                        agg.setProductQuantities(sumQuantity(p1.getProductQuantity(), agg.getProductQuantities()));
+                    } else {
+                        userIds.add(p1.getUserId());
+                        ProductsDTO dto = new ProductsDTO(p1.getProductName(), p1.getProductQuantity(), p1.getProductDescription(), p1.getProductMetric(), p1.getProductType(), userIds);
+                        toBeAdded.add(dto);
+                    }
                 }
-            });
-            if (!newProducts.isEmpty()) {
-                userProducts.getProductsList().addAll(newProducts);
             }
-            userProductsRepo.save(userProducts);
-        } else {
-            newProducts.add(products);
-            userProducts = new UsersProduct();
-            userProducts.setUserId(userId);
-            userProducts.setProductsList(newProducts);
-            userProductsRepo.insert(userProducts);
         }
-        return userProducts;
+        aggregatedList.addAll(toBeAdded);
+        return aggregatedList;
     }
 
-    @Override
-    public List<UsersProduct> findAllUsersAndProducts() {
-        return userProductsRepo.findAll();
-    }
-
-    @Override
-    public List<Products> findAllUsersProducts() {
-        List<Products> products = new ArrayList<>();
-        List<UsersProduct> allUserProductsList = findAllUsersAndProducts();
-
-        if (!allUserProductsList.isEmpty()) {
-            allUserProductsList.forEach(obj -> products.addAll(obj.getProductsList()));
-            return products;
-        } else {
-            return new ArrayList<>();
-        }
-    }
-
-    @Override
-    public List<Products> findProductsByUserId(String userId) {
-        List<UsersProduct> allUserProductsList = findAllUsersAndProducts();
-        List<Products> products = new ArrayList<>();
-        ;
-        if (!allUserProductsList.isEmpty()) {
-            allUserProductsList.forEach(obj -> {
-                if (obj.getUserId().equals(userId)) {
-                    products.addAll(obj.getProductsList());
-                }
-            });
-            return products;
-        } else {
-            return new ArrayList<>();
-        }
-    }
 }

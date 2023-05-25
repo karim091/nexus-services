@@ -1,28 +1,27 @@
 package com.nexus.services;
 
 import com.nexus.model.Products;
-import com.nexus.model.UsersProduct;
+import com.nexus.model.ProductsDTO;
 
 import java.util.List;
-import java.util.Map;
 
 public interface IProductService {
 
     Products saveProduct(Products product, String userId);
     Products updateProduct(Products product, String userId);
 
-    Products findProductByName(String name);
+    Products findProductByNameAndUserId(String productName, String userId);
+
+   // Products findAProductByUserId(String userId);
+
 
     List<Products> saveBulkProduct(List<Products> productList, String userId);
-    List<Products> findAllProducts();
-    List<Products> findAllProductsAggregated();
+    List<Products> findAllProducts(String adminUserId);
 
-
-    List<Products> findProductsByCountry(String name);
+    List<Products> findProductsByCountry(String productCountryOfOrigin);
     List<Products> findProductByType(String productType);
-    UsersProduct addProductsToUsers(Products products, String userId);
-    List<UsersProduct> findAllUsersAndProducts();
-    List<Products>  findAllUsersProducts();
-    List<Products> findProductsByUserId(String userId);
 
+    List<Products> findAllProductsByUserId(String userId);
+
+    List<ProductsDTO> findAllProductsAggregated(String userId);
 }

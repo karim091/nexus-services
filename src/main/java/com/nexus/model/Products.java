@@ -21,20 +21,20 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Products {
 
+    public Products(){
+
+    }
     @Id
     private String id;
-    private String name;
-    private int quantity;
-    private String imgURL;
+    private String productName;
+    private int productQuantity;
+    private String productImgURL;
     private ProductType productType;
+    private Metric productMetric;
 
-    private String condition;
+    private Country productCountryOfOrigin;
 
-    private Metric metric;
-
-    private Country countryOfOrigin;
-
-    private String description;
+    private String productDescription;
 
     private String userId;
 
