@@ -48,7 +48,7 @@ public class ProductController {
 
     // ADMIN ONLY
     @GetMapping("/productsAggregated")
-    public ResponseEntity<List<ProductsDTO>> allProducts(@RequestParam(name = "userId", required = true) String userId){
+    public ResponseEntity<List<ProductsDTO>> allProducts(@RequestParam(name = "userId", required = true) String userId, WebRequest webRequest) throws Exception {
         List<ProductsDTO> productList = productService.findAllProductsAggregated(userId);
         if(!productList.isEmpty()){
             return ResponseEntity.ok().body(productList);
@@ -59,7 +59,7 @@ public class ProductController {
 
     // ADMIN
     @GetMapping("/productsByUserId")
-    public ResponseEntity<List<Products>> allProductsByUserId(@RequestParam(name = "userId", required = true) String userId){
+    public ResponseEntity<List<Products>> allProductsByUserId(@RequestParam(name = "userId", required = true) String userId, WebRequest webRequest){
         List<Products> productList = productService.findAllProductsByUserId(userId);
         if(!productList.isEmpty()){
             return ResponseEntity.ok().body(productList);
@@ -69,7 +69,7 @@ public class ProductController {
     }
 
     @GetMapping("/productsByType/{productType}")
-    public ResponseEntity<List<Products>> getProductByType(@PathVariable("productType") ProductType productType, @RequestParam(name = "userId", required = true) String userId){
+    public ResponseEntity<List<Products>> getProductByType(@PathVariable("productType") ProductType productType, @RequestParam(name = "userId", required = true) String userId, WebRequest webRequest){
         List<Products> productList = productService.findProductByType(productType.toString());
         if(!productList.isEmpty()){
             return ResponseEntity.ok().body(productList);
@@ -78,7 +78,7 @@ public class ProductController {
         }
     }
     @GetMapping("/productsByCountry/{country}")
-    public ResponseEntity<List<Products>> getProductByType(@PathVariable("country") Country country, @RequestParam(name = "userId", required = true) String userId){
+    public ResponseEntity<List<Products>> getProductByType(@PathVariable("country") Country country, @RequestParam(name = "userId", required = true) String userId, WebRequest webRequest){
         List<Products> productList = productService.findProductsByCountry(country.toString());
         if(!productList.isEmpty()){
             return ResponseEntity.ok().body(productList);
@@ -88,7 +88,7 @@ public class ProductController {
     }
 
     @PutMapping("/products")
-    public ResponseEntity<Products> updateProduct( @RequestBody Products product, @RequestParam(name = "userId", required = true) String userId){
+    public ResponseEntity<Products> updateProduct(@RequestBody Products product, @RequestParam(name = "userId", required = true) String userId, WebRequest webRequest){
         Products updated = productService.updateProduct(product, userId);
         return ResponseEntity.ok().body(updated);
     }

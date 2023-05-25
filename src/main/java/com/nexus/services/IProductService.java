@@ -16,12 +16,12 @@ public interface IProductService {
 
 
     List<Products> saveBulkProduct(List<Products> productList, String userId);
-    List<Products> findAllProducts(String adminUserId);
+    List<Products> findAllProducts(String adminUserId) throws Exception ;
 
     List<Products> findProductsByCountry(String productCountryOfOrigin);
     List<Products> findProductByType(String productType);
 
     List<Products> findAllProductsByUserId(String userId);
 
-    List<ProductsDTO> findAllProductsAggregated(String userId);
+    List<ProductsDTO> findAllProductsAggregated(String userId) throws Exception ;
 }

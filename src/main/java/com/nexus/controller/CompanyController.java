@@ -27,15 +27,15 @@ public class CompanyController {
     private ICompanyServices companyServices;
 
     @PostMapping("/company")
-    public ResponseEntity<Company> newCompany(@RequestBody Company company, WebRequest webRequest, @RequestParam(name = "userId", required = true) String userId) throws Exception{
+    public ResponseEntity<Company> newCompany(@RequestBody Company company, WebRequest webRequest, @RequestParam(name = "userId", required = true) String userId) throws Exception {
         Company createdCompany = companyServices.newCompany(company);
         String uri = String.format("%s/company/%s", webRequest.getContextPath(), UUID.randomUUID());
         URI locationURI = new URI(uri);
-       return ResponseEntity.created(locationURI).body(createdCompany);
+        return ResponseEntity.created(locationURI).body(createdCompany);
     }
 
     @GetMapping("/companies")
-    public ResponseEntity<List<Company>> findAllCompanies(@RequestParam(name = "userId", required = true) String userId) {
+    public ResponseEntity<List<Company>> findAllCompanies(@RequestParam(name = "userId", required = true) String userId, WebRequest webRequest) throws Exception {
         List<Company> companyList = companyServices.findAllCompanies(userId);
         if (!companyList.isEmpty()) {
             return ResponseEntity.ok().body(companyList);
@@ -46,7 +46,7 @@ public class CompanyController {
 
 
     @GetMapping("/companiesByCountry/{country}")
-    public ResponseEntity<List<Company>> findCompaniesByCountry(@PathVariable("country") Country country, @RequestParam(name = "userId", required = true) String userId) {
+    public ResponseEntity<List<Company>> findCompaniesByCountry(@PathVariable("country") Country country, @RequestParam(name = "userId", required = true) String userId, WebRequest webRequest) {
         List<Company> companyList = companyServices.findCompanyByCountry(country.toString());
         if (!companyList.isEmpty()) {
             return ResponseEntity.ok().body(companyList);
@@ -56,7 +56,7 @@ public class CompanyController {
     }
 
     @GetMapping("/companyByName/{countryName}")
-    public ResponseEntity<Company> findCompaniesByName(@PathVariable("countryName") String countryName, @RequestParam(name = "userId", required = true) String userId) {
+    public ResponseEntity<Company> findCompaniesByName(@PathVariable("countryName") String countryName, @RequestParam(name = "userId", required = true) String userId, WebRequest webRequest) {
         Company company = companyServices.findCompanyByName(countryName);
         return ResponseEntity.ok().body(company);
     }

@@ -9,7 +9,7 @@ public interface ICompanyServices {
 
 
     Company newCompany(Company company)throws Exception ;
-    List<Company> findAllCompanies(String userId);
+    List<Company> findAllCompanies(String userId)throws Exception ;
     List<Company> findCompanyByCountry(String companyLocation);
     Company findCompanyByName(String companyName);
 

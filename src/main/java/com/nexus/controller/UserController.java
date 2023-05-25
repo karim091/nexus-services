@@ -29,13 +29,13 @@ public class UserController {
     private IUserService userService;
 
     @PutMapping("/user")
-    public ResponseEntity<Users> updateUser(@RequestBody Users newUser){
+    public ResponseEntity<Users> updateUser(@RequestBody Users newUser) {
         Users user = userService.updateUser(newUser);
         return ResponseEntity.ok().body(user);
     }
 
     @PostMapping("/user")
-    public ResponseEntity<Users> newUser(@RequestBody Users newUser, WebRequest webRequest) throws Exception{
+    public ResponseEntity<Users> newUser(@RequestBody Users newUser, WebRequest webRequest) throws Exception {
         Users user = userService.newUser(newUser);
         String uri = String.format("%s/company/%s", webRequest.getContextPath(), UUID.randomUUID());
         URI locationURI = new URI(uri);
@@ -43,46 +43,44 @@ public class UserController {
     }
 
     @GetMapping("/user")
-    public ResponseEntity< List<Users>> listusers(@RequestParam(name = "userId", required = true) String userId){
+    public ResponseEntity<List<Users>> listusers(@RequestParam(name = "userId", required = true) String userId, WebRequest webRequest) throws Exception {
         List<Users> userList = userService.findAllUsers(userId);
-        if(!userList.isEmpty()){
+        if (!userList.isEmpty()) {
             return ResponseEntity.ok().body(userList);
-        }else{
+        } else {
             return ResponseEntity.noContent().build();
         }
     }
 
     @GetMapping("/userByRole/{userRole}")
-    public ResponseEntity< List<Users>> userByRole(@PathVariable("userRole") UserRole userRole, @RequestParam(name = "userId", required = true) String userId){
+    public ResponseEntity<List<Users>> userByRole(@PathVariable("userRole") UserRole userRole, @RequestParam(name = "userId", required = true) String userId, WebRequest webRequest) throws Exception {
         List<Users> userList = userService.findUserByRole(userRole.toString(), userId);
-        if(!userList.isEmpty()){
+        if (!userList.isEmpty()) {
             return ResponseEntity.ok().body(userList);
-        }else{
+        } else {
             return ResponseEntity.noContent().build();
         }
     }
 
     @GetMapping("/userByType/{userType}")
-    public ResponseEntity< List<Users>> userByType(@PathVariable("userType") UserType userType, @RequestParam(name = "userId", required = true) String userId){
+    public ResponseEntity<List<Users>> userByType(@PathVariable("userType") UserType userType, @RequestParam(name = "userId", required = true) String userId, WebRequest webRequest) throws Exception {
         List<Users> userList = userService.findUserByType(userType.toString(), userId);
-        if(!userList.isEmpty()){
+        if (!userList.isEmpty()) {
             return ResponseEntity.ok().body(userList);
-        }else{
+        } else {
             return ResponseEntity.noContent().build();
         }
     }
 
-    @GetMapping("/userById/{id}")
-    public ResponseEntity<Users> userByType(@PathVariable("id") String id){
-        Users user = userService.findUserById(id);
-        if(user != null){
+    @GetMapping("/userById/{userId}")
+    public ResponseEntity<Users> userById(@PathVariable("userId") String userId, WebRequest webRequest) {
+        Users user = userService.findUserById(userId);
+        if (user != null) {
             return ResponseEntity.ok().body(user);
-        }else{
+        } else {
             return ResponseEntity.noContent().build();
         }
     }
-
-
 
 
 }

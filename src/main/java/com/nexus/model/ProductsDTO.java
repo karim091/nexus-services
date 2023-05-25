@@ -1,5 +1,6 @@
 package com.nexus.model;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -12,10 +13,12 @@ import java.util.Set;
 @Setter
 @Getter
 @AllArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ProductsDTO {
     public ProductsDTO(String productName, int productQuantities) {
         this.productName = productName;
         this.productQuantities = productQuantities;
+        this.productMetric = Metric.KG;
     }
     public ProductsDTO(){
 
@@ -28,8 +31,7 @@ public class ProductsDTO {
 
     private ProductType productType;
 
-    @FieldNameConstants.Exclude
-    private Set<String> usersIds = new HashSet<>();
+    private Set<String> usersIds;
 
 
 

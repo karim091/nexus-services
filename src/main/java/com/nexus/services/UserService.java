@@ -58,7 +58,7 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public List<Users> findAllUsers(String userId) {
+    public List<Users> findAllUsers(String userId) throws Exception {
         helper.checkUserAuthority(userId);
         return repo.findAll();
     }
@@ -74,7 +74,7 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public List<Users> findUserByRole(String userRole, String userId) {
+    public List<Users> findUserByRole(String userRole, String userId) throws Exception {
         helper.checkUserAuthority(userId);
 
         List<Users> optUser = repo.findUserByRole(userRole);
@@ -86,7 +86,7 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public List<Users> findUserByType(String userType, String userId) {
+    public List<Users> findUserByType(String userType, String userId) throws Exception {
         helper.checkUserAuthority(userId);
 
         List<Users> optUser = repo.findUserByType(userType);

@@ -15,7 +15,7 @@ public class Helper {
     @Autowired
     @Lazy
     private IUserService userService;
-    public void checkUserAuthority(String userId){
+    public void checkUserAuthority(String userId) throws Exception {
         Users user = userService.findUserById(userId);
         if(!user.getUserRole().equals(UserRole.ADMIN)) {
             throw new AuthorizationException("User is not authorize for this action.");

@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Component
 @Transactional
@@ -78,7 +79,7 @@ public class ProductService implements IProductService {
     }
 
     @Override
-    public List<Products> findAllProducts(String userId) {
+    public List<Products> findAllProducts(String userId) throws Exception {
         helper.checkUserAuthority(userId);
         return repo.findAll();
     }
@@ -112,19 +113,14 @@ public class ProductService implements IProductService {
     }
 
     @Override
-    public List<ProductsDTO> findAllProductsAggregated(String userId) {
+    public List<ProductsDTO> findAllProductsAggregated(String userId) throws Exception {
         List<Products> productList = findAllProducts(userId);
         List<ProductsDTO> aggregatedList = new ArrayList<>();
-
-        //Or alternatively as suggested by Holger
         Map<String, Long> groupsNew = productList.stream().collect(Collectors.groupingBy(Products::getProductName, Collectors.summingLong(Products::getProductQuantity)));
-
-        System.out.println(groupsNew);
-        groupsNew.forEach((productName, quantity)->{
+        groupsNew.forEach((productName, quantity) -> {
             ProductsDTO dto = new ProductsDTO(productName, Integer.valueOf(quantity.toString()));
             aggregatedList.add(dto);
         });
-
 
         return aggregatedList;
     }

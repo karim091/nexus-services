@@ -26,7 +26,7 @@ public class GeneralExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(AuthorizationException.class)
     public ResponseEntity<Object> handleAuthorizationException(
-            MissingDataException ex, WebRequest request) {
+            AuthorizationException ex, WebRequest request) {
         return buildCommonResponse(ex, HttpStatus.UNAUTHORIZED, request);
     }
     @ExceptionHandler(NotFoundException.class)
