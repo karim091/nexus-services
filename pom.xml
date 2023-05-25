@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.nexus</groupId>
 	<artifactId>nexus-services</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1</version>
 	<name>nexus-services</name>
 	<description>Demo project for Spring Boot</description>
 	<properties>
@@ -54,6 +54,7 @@
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
 		</plugins>
+		<finalName>nexus-services</finalName>
 	</build>
 
 </project>
