@@ -6,6 +6,7 @@ import com.nexus.model.ProductsDTO;
 import com.nexus.model.Users;
 import com.nexus.repo.IProductRepo;
 import com.nexus.utils.Helper;
+import com.nexus.utils.Notification;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
@@ -28,6 +29,8 @@ public class ProductService implements IProductService {
 
     @Autowired
     private Helper helper;
+    @Autowired
+    private Notification notification;
 
     @Override
     public Products saveProduct(Products product, String userId) {
@@ -44,6 +47,8 @@ public class ProductService implements IProductService {
                 user.getProductList().add(finalProduct);
                 userService.updateUser(user);
             }
+            notification.sendEmail("New Product","User " + user.getFullName() + " added A new product, Description: " + product.getProductDescription());
+
             return finalProduct;
         } catch (Exception ex) {
             throw new UnHandledCustomException("Data enrichment Issue.");
@@ -68,13 +73,15 @@ public class ProductService implements IProductService {
     @Override
     public List<Products> saveBulkProduct(List<Products> productList, String userId) {
         List<Products> productCreatedList = new ArrayList<>();
+        Users user = userService.findUserById(userId);
 
         productList.forEach(product -> {
             Products p = saveProduct(product, userId);
             productCreatedList.add(p);
         });
+        notification.sendEmail("New Bulk Product","User " + user.getFullName() + " added A list of product");
 
-        return null;
+        return productCreatedList;
 
     }
 

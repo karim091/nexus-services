@@ -7,6 +7,7 @@ import com.nexus.model.Users;
 import com.nexus.repo.ICompanyRepo;
 import com.nexus.repo.IUserRepo;
 import com.nexus.utils.Helper;
+import com.nexus.utils.Notification;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,6 +27,8 @@ public class CompanyService implements ICompanyServices {
 
     @Autowired
     private Helper helper;
+    @Autowired
+    private Notification notification;
 
     @Override
     public Company newCompany(Company company) throws Exception {
@@ -38,9 +41,12 @@ public class CompanyService implements ICompanyServices {
                     Company createdCompany = repo.insert(company);
                     user.getCompanyProfile().add(createdCompany);
                     userService.updateUser(user);
+                    notification.sendEmail("New Company been Added","User " + user.getFullName()+ " New company into the system, Description: " + company.getCompanyDescription());
+
                     return createdCompany;
                 }
             }else {
+                notification.sendEmail("New Company been Added"," New company into the system, Description: " + company.getCompanyDescription());
                 return repo.insert(company);
             }
 

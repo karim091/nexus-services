@@ -7,6 +7,7 @@ import com.nexus.model.Users;
 import com.nexus.repo.ICompanyRepo;
 import com.nexus.repo.IUserRepo;
 import com.nexus.utils.Helper;
+import com.nexus.utils.Notification;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
@@ -30,6 +31,9 @@ public class UserService implements IUserService {
     @Autowired
     private Helper helper;
 
+    @Autowired
+    private Notification notification;
+
 
     @Override
     public Users newUser(Users user) throws Exception {
@@ -42,6 +46,9 @@ public class UserService implements IUserService {
                 c.setUserId(userCreated.getId());
                 companyServices.updateCompany(c);
             });
+
+            notification.sendEmail("New User registered ","New user been added to the system");
+
             return userCreated;
         } else {
             return repo.insert(user);
