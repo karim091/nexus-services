@@ -14,10 +14,36 @@
 	<name>nexus-services</name>
 	<description>Demo project for Spring Boot</description>
 	<properties>
-
+		<open.feign.version>4.0.3</open.feign.version>
+		<feign-okhttp.version>12.3</feign-okhttp.version>
 		<java.version>17</java.version>
+		<gson-version>2.8.1</gson-version>
+		<gson-fire-version>1.8.3</gson-fire-version>
 	</properties>
 	<dependencies>
+
+		<!-- Feign Client -->
+		<dependency>
+			<groupId>io.github.openfeign</groupId>
+			<artifactId>feign-okhttp</artifactId>
+			<version>${feign-okhttp.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-openfeign</artifactId>
+			<version>${open.feign.version}</version>
+		</dependency>
+		<!-- Feign Client -->
+		<dependency>
+			<groupId>com.google.code.gson</groupId>
+			<artifactId>gson</artifactId>
+			<version>${gson-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>io.gsonfire</groupId>
+			<artifactId>gson-fire</artifactId>
+			<version>${gson-fire-version}</version>
+		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-mail</artifactId>

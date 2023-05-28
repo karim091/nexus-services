@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <property name="LOGS" value="./logs" />
+
+    <appender name="Console" class="ch.qos.logback.core.ConsoleAppender">
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <Pattern>
+                %d{dd-MM-yyyy HH:mm:ss.SSS} %green([%thread]) %cyan(%replace({%X{correlationId}}){'\{\}', ''}) %cyan(%replace([%X{username}]){'\[\]', ''}) %highlight(%-5level) %logger{15}.%M - %msg%n
+            </Pattern>
+        </layout>
+    </appender>
+
+    <appender name="Console-json" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <fieldNames>
+                <timestamp>time</timestamp>
+                <logger>logger</logger>
+            </fieldNames>
+        </encoder>
+    </appender>
+
+    <springProfile name="!not-local">
+        <logger name="com.lm" level="debug">
+            <appender-ref ref="Console" />
+        </logger>
+
+
+    </springProfile>
+
+    <springProfile name="not-local">
+        <root level="${LOG_LEVEL}">
+            <appender-ref ref="Console-json" />
+        </root>
+    </springProfile>
+
+</configuration>
