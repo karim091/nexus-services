@@ -1,5 +1,5 @@
 # Use the official maven/Java 8 image to create a build artifact:
-FROM maven:3.9.2-eclipse-temurin-8-alpine as builder
+FROM maven:3.8.1-openjdk-17-slim as builder
 
 
 # Copy local code to the container image.
