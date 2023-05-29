@@ -57,6 +57,9 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<layout>LAYERED_JAR</layout>
+				</configuration>
 			</plugin>
 
 			<plugin>
@@ -82,7 +85,6 @@
 			</plugin>
 
 		</plugins>
-		<finalName>nexus-services</finalName>
 	</build>
 
 </project>
