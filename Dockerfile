@@ -1,10 +1,17 @@
-# Start with a base image containing Java runtime
-FROM openjdk:17-oracle
+FROM maven:3.9.2-eclipse-temurin-17-alpine as builder
 
-# Make port 8080 available to the world outside this container
-EXPOSE 8080
 
-ADD target/nexus-services.jar nexus-services.jar
+WORKDIR /app
+COPY pom.xml .
+COPY src ./src
 
-# Run the jar file
-ENTRYPOINT ["java","-jar","nexus-services.jar"]
+
+RUN mvn package
+
+
+FROM eclipse-temurin:17.0.7_7-jre-alpine
+
+
+COPY --from=builder app/target/nexus-services-*.jar /nexus-services.jar
+
+CMD ["java", "-Djava.security.egd=file:/dev/./urandom", "-jar", "/nexus-services.jar"]
