@@ -18,7 +18,7 @@ FROM openjdk:17.0.1-jdk-slim
 
 
 # Copy the jar to the production image from the builder stage.
-COPY --from=builder /app/target/nexus-services-*.jar /nexus-services.jar
+COPY --from=builder /target/nexus-services-*.jar /nexus-services.jar
 
 # Run the web service on container startup.
 CMD ["java", "-Djava.security.egd=file:/dev/./urandom", "-jar", "/nexus-services.jar"]
