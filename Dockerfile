@@ -13,7 +13,8 @@ RUN mvn package
 # Use the Official OpenJDK image for a lean production stage of our multi-stage build.
 # https://hub.docker.com/_/openjdk
 # https://docs.docker.com/develop/develop-images/multistage-build/#use-multi-stage-builds
-FROM openjdk:17-jdk-alpine3.14
+FROM openjdk:17-jdk-slim
+
 
 # Copy the jar to the production image from the builder stage.
 COPY --from=builder /app/target/nexus-services-*.jar /nexus-services.jar
