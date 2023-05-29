@@ -29,9 +29,6 @@ public class UserService implements IUserService {
     private ICompanyServices companyServices;
 
     @Autowired
-    private Helper helper;
-
-    @Autowired
     private Notification notification;
 
 
@@ -66,7 +63,6 @@ public class UserService implements IUserService {
 
     @Override
     public List<Users> findAllUsers(String userId) throws Exception {
-        helper.checkUserAuthority(userId);
         return repo.findAll();
     }
 
@@ -82,8 +78,6 @@ public class UserService implements IUserService {
 
     @Override
     public List<Users> findUserByRole(String userRole, String userId) throws Exception {
-        helper.checkUserAuthority(userId);
-
         List<Users> optUser = repo.findUserByRole(userRole);
         if (!optUser.isEmpty()) {
             return optUser;
@@ -94,8 +88,6 @@ public class UserService implements IUserService {
 
     @Override
     public List<Users> findUserByType(String userType, String userId) throws Exception {
-        helper.checkUserAuthority(userId);
-
         List<Users> optUser = repo.findUserByType(userType);
         if (!optUser.isEmpty()) {
             return optUser;

@@ -66,7 +66,6 @@ public class CompanyService implements ICompanyServices {
 
     @Override
     public List<Company> findAllCompanies(String userId) throws Exception {
-        helper.checkUserAuthority(userId);
         return repo.findAll();
     }
 
