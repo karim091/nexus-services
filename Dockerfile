@@ -1,14 +1,24 @@
+# Use the official maven/Java 8 image to create a build artifact:
+FROM maven:3.8.1-openjdk-17-slim as builder
 
 
-# Start with a base image containing Java runtime
-FROM openjdk:17-oracle
+# Copy local code to the container image.
+WORKDIR /app
+COPY pom.xml .
+COPY src ./src
 
-# Make port 8080 available to the world outside this container
-EXPOSE 8080
+# Build a release artifact.
+RUN mvn package
 
-ADD target/nexus-services.jar nexus-services.jar
+# Use the Official OpenJDK image for a lean production stage of our multi-stage build.
+# https://hub.docker.com/_/openjdk
+# https://docs.docker.com/develop/develop-images/multistage-build/#use-multi-stage-builds
+FROM openjdk:17.0.1-jdk-slim
 
-# Run the jar file
-ENTRYPOINT ["java","-jar","nexus-services.jar"]
 
 
+# Copy the jar to the production image from the builder stage.
+COPY --from=builder /app/target/nexus-services-*.jar /nexus-services.jar
+
+# Run the web service on container startup.
+CMD ["java", "-Djava.security.egd=file:/dev/./urandom", "-jar", "/nexus-services.jar"]
