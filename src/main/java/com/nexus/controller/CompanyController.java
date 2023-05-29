@@ -55,9 +55,9 @@ public class CompanyController {
         }
     }
 
-    @GetMapping("/companyByName/{countryName}")
-    public ResponseEntity<Company> findCompaniesByName(@PathVariable("countryName") String countryName, @RequestParam(name = "userId", required = true) String userId, WebRequest webRequest) {
-        Company company = companyServices.findCompanyByName(countryName);
+    @GetMapping("/companyByName/{companyName}")
+    public ResponseEntity<Company> findCompaniesByName(@PathVariable("companyName") String companyName, @RequestParam(name = "userId", required = true) String userId, WebRequest webRequest) {
+        Company company = companyServices.findCompanyByName(companyName);
         return ResponseEntity.ok().body(company);
     }
 
