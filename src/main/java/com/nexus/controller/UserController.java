@@ -82,5 +82,14 @@ public class UserController {
 
     }
 
+    @GetMapping("/userByLocalId/{localId}")
+    public ResponseEntity<Users> userByLocalId(@PathVariable("localId") String localId, WebRequest webRequest) {
+        Users user = userService.findUserByLocalId(localId);
+        if (user != null) {
+            return ResponseEntity.ok().body(user);
+        } else {
+            return ResponseEntity.noContent().build();
+        }
 
+    }
 }

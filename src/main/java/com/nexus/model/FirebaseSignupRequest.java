@@ -9,6 +9,8 @@ import lombok.Setter;
 @AllArgsConstructor
 public class FirebaseSignupRequest {
 
+    private String phoneNumber;
+
     private String email;
     private boolean emailVerified;
     private String displayName;

@@ -1,6 +1,7 @@
 package com.nexus.services;
 
 import com.nexus.api.FirebaseAPI;
+import com.nexus.api.FirebaseSignupAPI;
 import com.nexus.exception.NotFoundException;
 import com.nexus.exception.UnHandledCustomException;
 import com.nexus.model.Company;
@@ -36,36 +37,43 @@ public class UserService implements IUserService {
 
     @Autowired
     @Lazy
-    private FirebaseAPI firebaseAPI;
+    private FirebaseSignupAPI firebaseAPI;
 
     @Override
     public Users newUser(Users user) throws Exception {
 
         try{
-            // TODO FIREBASE SIGNUP
-            FirebaseSignupResponse response = firebaseAPI.signUp(new FirebaseSignupRequest(user.getUserEmail(),false, user.getFullName(), true, user.getPassword()), "AIzaSyCjxgT9pk782PE1E50yp93OVeUb7aeGnmw");
-            user.setLocalId(response.getLocalId());
-            user.setIdToken(response.getIdToken());
-            if (!user.getCompanyProfile().isEmpty()) {
+            FirebaseSignupResponse res =  firebaseAPI.signUp(new FirebaseSignupRequest(user.getId(), user.getUserEmail(),false, user.getFullName(), true, user.getPassword()), "AIzaSyCjxgT9pk782PE1E50yp93OVeUb7aeGnmw");
+
+            user.setLocalId(res.getLocalId());
+            user.setPassword(null);
+
+        if (!user.getCompanyProfile().isEmpty()) {
                 for (Company company : user.getCompanyProfile()) {
                     companyServices.newCompany(company);
                 }
+
                 Users userCreated = repo.insert(user);
                 user.getCompanyProfile().forEach(c -> {
                     c.setUserId(userCreated.getId());
                     companyServices.updateCompany(c);
                 });
                 notification.sendEmail("New User registered ","New user been added to the system");
+
                 return userCreated;
             } else {
+                notification.sendEmail("New User registered ","New user been added to the system");
                 return repo.insert(user);
             }
         } catch (Exception e){
-
+            throw new UnHandledCustomException("UnHandled Exceptions");
         }
-        return null;
     }
 
+    private FirebaseSignupResponse firebaseSignup(Users user){
+        // TODO FIREBASE SIGNUP
+        return firebaseAPI.signUp(new FirebaseSignupRequest(user.getId(), user.getUserEmail(),false, user.getFullName(), true, user.getPassword()), "AIzaSyCjxgT9pk782PE1E50yp93OVeUb7aeGnmw");
+    }
     @Override
     public Users updateUser(Users user) {
         if (findUserById(user.getId()) != null) {
@@ -87,6 +95,17 @@ public class UserService implements IUserService {
             return optUser.get();
         } else {
             throw new NotFoundException("User Id " + id + " is not exist.");
+        }
+    }
+
+    @Override
+    public Users findUserByLocalId(String localId) {
+
+        Users optUser =  repo.findUserByLocalId(localId);
+        if (optUser != null) {
+            return optUser;
+        } else {
+            throw new NotFoundException("User localId " + localId + " is not exist.");
         }
     }
 

@@ -15,8 +15,7 @@ public interface FirebaseAPI {
     @PostMapping("/identitytoolkit/v3/relyingparty/getAccountInfo")
     FirebaseRes tokenVerify(@RequestBody FirebaseReq idToken, @RequestParam("key") String key);
 
-    @PostMapping("/v1/accounts:signUp")
-    FirebaseSignupResponse signUp(@RequestBody FirebaseSignupRequest idToken, @RequestParam("key") String key);
+
 
 
 

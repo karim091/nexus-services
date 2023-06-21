@@ -13,4 +13,10 @@ public interface IUserRepo extends MongoRepository<Users, String> {
     @Query("{userType:'?0'}")
 
     List<Users> findUserByType(String userType);
+    @Query("{localId:'?0'}")
+
+    Users findUserByLocalId(String localId);
+
+
+
 }

@@ -11,6 +11,7 @@ public interface IUserService {
     Users updateUser(Users user);
     List<Users> findAllUsers(String userId)throws Exception ;
     Users findUserById(String id);
+    Users findUserByLocalId(String localId);
     List<Users> findUserByRole(String userRole, String userId)throws Exception ;
     List<Users> findUserByType(String userType, String userId)throws Exception ;
 

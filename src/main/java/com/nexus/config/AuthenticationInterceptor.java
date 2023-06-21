@@ -28,7 +28,12 @@ public class AuthenticationInterceptor implements AsyncHandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
             throws Exception {
         System.out.println("In Authentication Interceptor");
-        checkUserAuthority();
+        String url = request.getRequestURI();
+        String method = request.getMethod();
+        if(!url.contains("api/user") && !method.equalsIgnoreCase("POST")) {
+            checkUserAuthority();
+
+        }
         return true;
     }
 
