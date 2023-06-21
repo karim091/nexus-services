@@ -11,6 +11,6 @@ public class FirebaseRes {
 
 
     private String kind;
-    private List<FirebaseUser> users;
+    private List<FirebaseSignupRequest> users;
 
 }

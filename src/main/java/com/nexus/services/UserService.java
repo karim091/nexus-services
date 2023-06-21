@@ -1,8 +1,11 @@
 package com.nexus.services;
 
+import com.nexus.api.FirebaseAPI;
 import com.nexus.exception.NotFoundException;
 import com.nexus.exception.UnHandledCustomException;
 import com.nexus.model.Company;
+import com.nexus.model.FirebaseSignupRequest;
+import com.nexus.model.FirebaseSignupResponse;
 import com.nexus.model.Users;
 import com.nexus.repo.ICompanyRepo;
 import com.nexus.repo.IUserRepo;
@@ -31,25 +34,36 @@ public class UserService implements IUserService {
     @Autowired
     private Notification notification;
 
+    @Autowired
+    @Lazy
+    private FirebaseAPI firebaseAPI;
 
     @Override
     public Users newUser(Users user) throws Exception {
-        if (!user.getCompanyProfile().isEmpty()) {
-            for (Company company : user.getCompanyProfile()) {
-                companyServices.newCompany(company);
+
+        try{
+            // TODO FIREBASE SIGNUP
+            FirebaseSignupResponse response = firebaseAPI.signUp(new FirebaseSignupRequest(user.getUserEmail(),false, user.getFullName(), true, user.getPassword()), "AIzaSyCjxgT9pk782PE1E50yp93OVeUb7aeGnmw");
+            user.setLocalId(response.getLocalId());
+            user.setIdToken(response.getIdToken());
+            if (!user.getCompanyProfile().isEmpty()) {
+                for (Company company : user.getCompanyProfile()) {
+                    companyServices.newCompany(company);
+                }
+                Users userCreated = repo.insert(user);
+                user.getCompanyProfile().forEach(c -> {
+                    c.setUserId(userCreated.getId());
+                    companyServices.updateCompany(c);
+                });
+                notification.sendEmail("New User registered ","New user been added to the system");
+                return userCreated;
+            } else {
+                return repo.insert(user);
             }
-            Users userCreated = repo.insert(user);
-            user.getCompanyProfile().forEach(c -> {
-                c.setUserId(userCreated.getId());
-                companyServices.updateCompany(c);
-            });
+        } catch (Exception e){
 
-            notification.sendEmail("New User registered ","New user been added to the system");
-
-            return userCreated;
-        } else {
-            return repo.insert(user);
         }
+        return null;
     }
 
     @Override
