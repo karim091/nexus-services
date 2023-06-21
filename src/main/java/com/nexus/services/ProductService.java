@@ -87,7 +87,6 @@ public class ProductService implements IProductService {
 
     @Override
     public List<Products> findAllProducts(String userId) throws Exception {
-        helper.checkUserAuthority(userId);
         return repo.findAll();
     }
 

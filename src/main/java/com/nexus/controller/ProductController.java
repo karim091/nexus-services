@@ -20,7 +20,6 @@ import java.util.UUID;
 @RestController()
 @RequestMapping("api")
 @Validated
-@CrossOrigin(origins = "*")
 
 @SuppressWarnings("all")
 public class ProductController {

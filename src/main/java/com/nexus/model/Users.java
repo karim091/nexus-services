@@ -36,6 +36,11 @@ public class Users {
 
     private String userEmail;
 
+    private String password;
+
+    private String idToken;
+    private String localId;
+
     @DBRef
     private List<Company> companyProfile = new ArrayList<>();
 
