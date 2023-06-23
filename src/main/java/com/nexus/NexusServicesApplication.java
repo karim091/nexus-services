@@ -14,6 +14,7 @@ import java.util.Properties;
 
 @SpringBootApplication
 @EnableFeignClients
+
 public class NexusServicesApplication {
 
 	public static void main(String[] args) {
@@ -23,12 +24,12 @@ public class NexusServicesApplication {
 		SpringApplication.run(NexusServicesApplication.class, args);
 	}
 
-	@Bean
+
 	public WebMvcConfigurer corsConfigurer() {
 		return new WebMvcConfigurer() {
 			@Override
 			public void addCorsMappings(CorsRegistry registry) {
-				registry.addMapping("/**");
+				registry.addMapping("/api").allowedOrigins("https://nexusgrows-97ac5.web.app");
 			}
 		};
 	}
