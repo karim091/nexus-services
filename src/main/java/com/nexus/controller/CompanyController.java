@@ -20,6 +20,8 @@ import java.util.UUID;
 @RestController
 @RequestMapping("api")
 @Validated
+@CrossOrigin(origins = "https://nexusgrows-97ac5.web.app")
+
 @SuppressWarnings("all")
 public class CompanyController {
     @Autowired
