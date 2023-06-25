@@ -24,12 +24,12 @@ public class NexusServicesApplication {
 		SpringApplication.run(NexusServicesApplication.class, args);
 	}
 
-
+	@Bean
 	public WebMvcConfigurer corsConfigurer() {
 		return new WebMvcConfigurer() {
 			@Override
 			public void addCorsMappings(CorsRegistry registry) {
-				registry.addMapping("/api").allowedOrigins("https://nexusgrows-97ac5.web.app");
+				registry.addMapping("/api/*");
 			}
 		};
 	}
