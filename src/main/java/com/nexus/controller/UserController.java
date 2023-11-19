@@ -20,8 +20,8 @@ import java.util.UUID;
 @RestController
 @RequestMapping("api")
 @Validated
-@CrossOrigin(origins = "*")
-
+@CrossOrigin(origins = "*", allowedHeaders = "*", exposedHeaders = { "Access-Control-Allow-Origin",
+        "Access-Control-Allow-Credentials" }, allowCredentials = true)
 @SuppressWarnings("all")
 public class UserController {
 

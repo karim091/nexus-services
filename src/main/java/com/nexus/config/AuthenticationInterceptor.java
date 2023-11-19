@@ -34,6 +34,7 @@ public class AuthenticationInterceptor implements AsyncHandlerInterceptor {
             checkUserAuthority();
 
         }
+        
         return true;
     }
 

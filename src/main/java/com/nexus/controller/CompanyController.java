@@ -1,6 +1,5 @@
 package com.nexus.controller;
 
-
 import com.nexus.model.Company;
 import com.nexus.model.Country;
 import com.nexus.model.Products;
@@ -20,7 +19,8 @@ import java.util.UUID;
 @RestController
 @RequestMapping("api")
 @Validated
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "*", allowedHeaders = "*", exposedHeaders = { "Access-Control-Allow-Origin",
+        "Access-Control-Allow-Credentials" }, allowCredentials = true)
 
 @SuppressWarnings("all")
 public class CompanyController {
@@ -28,7 +28,8 @@ public class CompanyController {
     private ICompanyServices companyServices;
 
     @PostMapping("/company")
-    public ResponseEntity<Company> newCompany(@RequestBody Company company, WebRequest webRequest, @RequestParam(name = "userId", required = true) String userId) throws Exception {
+    public ResponseEntity<Company> newCompany(@RequestBody Company company, WebRequest webRequest,
+            @RequestParam(name = "userId", required = true) String userId) throws Exception {
         Company createdCompany = companyServices.newCompany(company);
         String uri = String.format("%s/company/%s", webRequest.getContextPath(), UUID.randomUUID());
         URI locationURI = new URI(uri);
@@ -36,7 +37,8 @@ public class CompanyController {
     }
 
     @GetMapping("/companies")
-    public ResponseEntity<List<Company>> findAllCompanies(@RequestParam(name = "userId", required = true) String userId, WebRequest webRequest) throws Exception {
+    public ResponseEntity<List<Company>> findAllCompanies(@RequestParam(name = "userId", required = true) String userId,
+            WebRequest webRequest) throws Exception {
         List<Company> companyList = companyServices.findAllCompanies(userId);
         if (!companyList.isEmpty()) {
             return ResponseEntity.ok().body(companyList);
@@ -45,9 +47,9 @@ public class CompanyController {
         }
     }
 
-
     @GetMapping("/companiesByCountry/{country}")
-    public ResponseEntity<List<Company>> findCompaniesByCountry(@PathVariable("country") Country country, @RequestParam(name = "userId", required = true) String userId, WebRequest webRequest) {
+    public ResponseEntity<List<Company>> findCompaniesByCountry(@PathVariable("country") Country country,
+            @RequestParam(name = "userId", required = true) String userId, WebRequest webRequest) {
         List<Company> companyList = companyServices.findCompanyByCountry(country.toString());
         if (!companyList.isEmpty()) {
             return ResponseEntity.ok().body(companyList);
@@ -57,7 +59,8 @@ public class CompanyController {
     }
 
     @GetMapping("/companyByName/{companyName}")
-    public ResponseEntity<Company> findCompaniesByName(@PathVariable("companyName") String companyName, @RequestParam(name = "userId", required = true) String userId, WebRequest webRequest) {
+    public ResponseEntity<Company> findCompaniesByName(@PathVariable("companyName") String companyName,
+            @RequestParam(name = "userId", required = true) String userId, WebRequest webRequest) {
         Company company = companyServices.findCompanyByName(companyName);
         return ResponseEntity.ok().body(company);
     }
