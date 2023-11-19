@@ -20,7 +20,7 @@ import java.util.UUID;
 @RequestMapping("api")
 @Validated
 @CrossOrigin(origins = "*", allowedHeaders = "*", exposedHeaders = { "Access-Control-Allow-Origin",
-        "Access-Control-Allow-Credentials" }, allowCredentials = true)
+        "Access-Control-Allow-Credentials" })
 
 @SuppressWarnings("all")
 public class CompanyController {
