@@ -47,6 +47,11 @@ public class CompanyController {
         }
     }
 
+@GetMapping("/debenRepo")
+    public ResponseEntity<String> testDebenRepo() throws Exception {
+        return ResponseEntity.body("Welcome Aboard - It\s Deben Project on GCP.. ");
+    }
+        
     @GetMapping("/companiesByCountry/{country}")
     public ResponseEntity<List<Company>> findCompaniesByCountry(@PathVariable("country") Country country,
             @RequestParam(name = "userId", required = true) String userId, WebRequest webRequest) {
